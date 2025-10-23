@@ -11,3 +11,11 @@ body{
 html{
   overflow-x: hidden;
 }
+.vdo-markdown p {
+	font-size: 30px;
+	margin-bottom: 25px;
+}
+.vdo-markdown ul li {
+	font-size: 20px;
+	margin-bottom: 10px;
+}

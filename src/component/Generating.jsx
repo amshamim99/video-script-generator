@@ -1,6 +1,33 @@
-import React from 'react'
-
+import React, { useState } from 'react'
+import { GoogleGenAI } from "@google/genai";
+import Markdown from 'react-markdown';
 const Generating = () => {
+
+    const [promt, setPromt] = useState("")
+    const [res, setRes] = useState("")
+    const [loader, setLoader] = useState(false)
+
+    const generateRes = async () => {
+        let promtInput = document.getElementById("promt")
+        if (promt == "") {
+            alert("You must discribe your video topic...!")
+            promtInput.focus();
+        } else {
+            setLoader(true)
+            const ai = new GoogleGenAI({ apiKey: "AIzaSyCMVmR6Vtx_PSsihAzBwh9YNIbTh5SDQ7Y" })
+            const response = await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: `Give a complet video script for the video which is ${promt}`,
+            });
+            setRes(response.text);
+            setLoader(false)
+        }
+    }
+    if(loader){
+        return <div className='vdo-absolute vdo-top-[50%] vdo-left-[50%] vdo-translate-y-[-50%] vdo-translate-x-[-50%]'>
+            <h1 className='vdo-text-3xl'>Loading..</h1>
+        </div>
+    }
     return (
         <>
             <div className="vdo-flex vdo-items-center vdo-justify-center vdo-min-h-[30vh]">
@@ -9,10 +36,16 @@ const Generating = () => {
             </div>
             <div className="vdo-text-area vdo-flex vdo-flex-col vdo-items-center vdo-justify-center">
                 {/* textarea */}
-                <textarea className='vdo-bg-gray-200 vdo-min-h-[130px] vdo-w-[50vw] vdo-border-0 vdo-outline-bone focus:vdo-outline-none vdo-p-5 vdo-rounded-lg vdo-text-[20px]' name="promt" id="promt" placeholder='Discribe your video topic.'></textarea>
+                <textarea onChange={(e) => { setPromt(e.target.value) }} value={promt} className='vdo-bg-gray-200 vdo-min-h-[130px] vdo-w-[50vw] vdo-border-0 vdo-outline-bone focus:vdo-outline-none vdo-p-5 vdo-rounded-lg vdo-text-[20px]' name="promt" id="promt" placeholder='Discribe your video topic.'></textarea>
                 {/* button */}
-                <button className='vdo-p-3 vdo-bg-purple-600 vdo-text-white vdo-text-[20px] vdo-mt-5 vdo-w-44 vdo-rounded-lg'>Generate</button>
+                <button onClick={generateRes} className='vdo-p-3 vdo-bg-purple-600 vdo-text-white vdo-text-[20px] vdo-mt-5 vdo-w-44 vdo-rounded-lg'>Generate</button>
             </div>
+            {
+                res !== "" ?
+                    <div className='vdo-markdown vdo-container vdo-mx-auto vdo-mt-20'>
+                        <Markdown >{res}</Markdown>
+                    </div> : ""
+            }
         </>
     )
 }
